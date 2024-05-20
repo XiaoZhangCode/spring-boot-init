@@ -1,0 +1,109 @@
+server:
+  port: 29999 # 服务器配置
+
+# Spring框架数据源配置
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver  # MySQL驱动类名
+    # 数据库连接URL
+    url: jdbc:mysql://localhost:3306/my_db?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root # 数据库用户名
+    password: 123456  # 数据库密码
+  # Redis配置
+  redis:
+    host: ccc # Redis服务器地址
+    port: 6377 # Redis服务器端口
+    database: 0 # 连接的Redis数据库索引
+    password: 123456789 # Redis密码
+    # 连接超时时间
+    timeout: 10s
+    lettuce:
+      pool:
+        # 连接池最大连接数
+        max-active: 200
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: -1ms
+        # 连接池中的最大空闲连接
+        max-idle: 10
+        # 连接池中的最小空闲连接
+        min-idle: 0
+  boot:
+    admin:
+      ## admin 服务端访问地址
+      context-path: /bootAdmin/
+      ## admin 客户端连接服务端
+      client:
+        # 为了显示客户端的ip否则是以主机名显示的，这样需要添加hosts影射。
+        instance:
+          service-host-type: IP
+        url: http://localhost:${server.port}/${spring.boot.admin.context-path}/
+        #username: admin
+        #password: admin@12345
+# logback日志输出
+logging:
+  file:
+    name: ${user.home}/logs/${spring.application.name}.log # 日志文件名，全路径
+
+--- #################### MyBatis Plus 相关配置 ####################
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-field: deleted # 全局逻辑删除的实体字段名
+      logic-delete-value: 1 # 逻辑已删除值（默认为 1）
+      logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
+
+--- #################### saToken 相关配置 ####################
+sa-token:
+  # 是否输出操作日志
+  is-log: true
+
+--- #################### swagger 相关配置 ####################
+# 配置springdoc-openapi的相关属性
+springdoc:
+  # 配置Swagger-UI的相关属性
+  swagger-ui:
+    # 设置Swagger-UI的访问路径
+    path: /swagger-ui.html
+    # 按字母表顺序对标签进行排序
+    tags-sorter: alpha
+    # 按字母表顺序对操作进行排序
+    operations-sorter: alpha
+  # 配置API文档的相关属性
+  api-docs:
+    # 设置API文档的访问路径
+    path: /v3/api-docs
+  # 配置应用的分组信息
+  group-configs:
+    # 定义一个分组配置
+    - group: 'default' # 设置分组名称
+      paths-to-match: '/**' # 设置匹配所有路径
+      packages-to-scan: cn.xzhang.boot.controller # 设置需要扫描的包路径
+# knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn # 设置语言为中文
+    enable-footer: false
+    enable-footer-custom: true
+    footer-custom-content: Apache License 2.0 | Copyright  2024-[codeZhang](https://github.com/XiaoZhangCode)
+    enable-filter-multipart-apis: true
+
+info:
+  title: "SpringBoot-init"
+  version: "1.0.0"
+  description: "SpringBoot-init"
+  name: "codeZhang"
+  email: "xiaozhang@qq.com"
+
+cos:
+  client:
+    accessKey: ''
+    secretKey: ''
+    region: ''
+    bucket: ''
+
+
+
