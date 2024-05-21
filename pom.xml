@@ -27,11 +27,17 @@
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
             <version>2.3.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mybatis</groupId>
+                    <artifactId>mybatis</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.5.2</version>
+            <version>3.5.6</version>
         </dependency>
 
         <dependency>
@@ -79,8 +85,6 @@
             <artifactId>commons-pool2</artifactId>
         </dependency>
 
-
-
         <!-- Sa-Token 权限认证，在线文档：https://sa-token.cc -->
         <dependency>
             <groupId>cn.dev33</groupId>
@@ -118,6 +122,20 @@
             <artifactId>cos_api</artifactId>
             <version>5.6.213</version>
         </dependency>
+
+        <!--      实现代码生成核心      -->
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.31</version> <!-- 根据实际需要选择版本 -->
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-generator</artifactId>
+            <version>3.5.6</version>
+        </dependency>
+
 
 
     </dependencies>

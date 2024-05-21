@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xzhang.boot.model.entity.User">
+
+    <resultMap id="BaseResultMap" type="cn.xzhang.boot.model.entity.User">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="userAccount" column="userAccount" jdbcType="VARCHAR"/>
+            <result property="userPassword" column="userPassword" jdbcType="VARCHAR"/>
+            <result property="unionId" column="unionId" jdbcType="VARCHAR"/>
+            <result property="mpOpenId" column="mpOpenId" jdbcType="VARCHAR"/>
+            <result property="userName" column="userName" jdbcType="VARCHAR"/>
+            <result property="userAvatar" column="userAvatar" jdbcType="VARCHAR"/>
+            <result property="userProfile" column="userProfile" jdbcType="VARCHAR"/>
+            <result property="userRole" column="userRole" jdbcType="VARCHAR"/>
+            <result property="userStatus" column="userStatus" jdbcType="TINYINT"/>
+            <result property="creator" column="creator" jdbcType="VARCHAR"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updater" column="updater" jdbcType="VARCHAR"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="deleted" column="deleted" jdbcType="BIT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,userAccount,userPassword,
+        unionId,mpOpenId,userName,
+        userAvatar,userProfile,userRole,
+        userStatus,creator,createTime,
+        updater,updateTime,deleted
+    </sql>
+</mapper>
