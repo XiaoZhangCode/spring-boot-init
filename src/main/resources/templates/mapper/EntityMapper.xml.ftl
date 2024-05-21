@@ -7,9 +7,17 @@
     <resultMap id="BaseResultMap" type="cn.xzhang.boot.model.entity.${entityName}">
         <#list columns as column>
             <#if column.columnName == 'id'>
-            <id property="id" column="id" jdbcType="BIGINT"/>
+                <id property="id" column="id" jdbcType="BIGINT"/>
             <#else>
-            <result property="${column.columnName}" column="${column.columnName}" jdbcType="${column.columnType}"/>
+                <#if column.columnType == 'DATETIME'>
+                    <result property="${column.columnName}" column="${column.columnName}" jdbcType="TIMESTAMP"/>
+                <#elseif column.columnType == 'INT'>
+                    <result property="${column.columnName}" column="${column.columnName}" jdbcType="INTEGER"/>
+                <#elseif column.columnType == 'TEXT'>
+                    <result property="${column.columnName}" column="${column.columnName}" jdbcType="CLOB"/>
+                <#else >
+                    <result property="${column.columnName}" column="${column.columnName}" jdbcType="${column.columnType}"/>
+                </#if>
             </#if>
         </#list>
     </resultMap>

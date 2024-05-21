@@ -19,6 +19,11 @@ import java.util.Date;
 public class ${entityName?cap_first}SimpleVo implements Serializable {
 
 <#list columns as column>
+    <#if (
+    column.columnName == "createTime" || column.columnName == "updateTime"|| column.columnName == "deleted" ||
+    column.columnName == "creator" || column.columnName == "updater"
+    )>
+    <#else>
     <#if column.columnName == 'id'>
     @Schema(description = "id")
     private Long id;
@@ -30,6 +35,7 @@ public class ${entityName?cap_first}SimpleVo implements Serializable {
     @Schema(description = "${column.columnComment}"<#if column.nullable>,requiredMode = Schema.RequiredMode.REQUIRED</#if>)
     private ${column.javaType} ${column.columnName};
 
+    </#if>
     </#if>
 </#list>
 

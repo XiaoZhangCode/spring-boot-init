@@ -1,5 +1,6 @@
 package cn.xzhang.boot.generate;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 import lombok.Data;
@@ -14,8 +15,6 @@ public class Generator {
     static String password = "123456";
 
     public static void main(String[] args) {
-        // 生成的文件的前缀
-        String prefix = "User";
         // 生成文件的包名
         String basePackage = "cn.xzhang.boot";
         // 文件头描述
@@ -36,6 +35,7 @@ public class Generator {
 
                 })
                 .strategyConfig(builder -> {
+                    builder.addInclude(StrUtil.toUnderlineCase(tableName));
                     builder.entityBuilder()
                             .javaTemplate("/templates/model/entity/Entity.java")
                             .controllerBuilder()
@@ -43,7 +43,7 @@ public class Generator {
                             .serviceBuilder()
                             .serviceTemplate("/templates/service/EntityService.java")
                             .serviceImplTemplate("/templates/service/impl/EntityServiceImpl.java")
-                            .formatServiceFileName(prefix + "Service")
+                            .formatServiceFileName(tableName + "Service")
                             .mapperBuilder()
                             .mapperTemplate("/templates/mapper/EntityMapper.java")
                             .mapperXmlTemplate("/templates/mapper/EntityMapper.xml")
@@ -53,13 +53,13 @@ public class Generator {
                 .injectionConfig(consumer -> {
                     Map<String, String> customFile = new HashMap<>();
 //                    // entity/dto/vo
-                    customFile.put("model/entity/"+prefix+".java", "/templates/model/entity/Entity.java.ftl");
-                    customFile.put("model/dto/"+prefix+"AddReqDTO.java", "/templates/model/dto/EntityAddReqDTO.java.ftl");
-                    customFile.put("model/dto/"+prefix+"BaseDTO.java", "/templates/model/dto/EntityBaseDTO.java.ftl");
-                    customFile.put("model/dto/"+prefix+"PageReqDTO.java", "/templates/model/dto/EntityPageReqDTO.java.ftl");
-                    customFile.put("model/dto/"+prefix+"UpdateReqDTO.java", "/templates/model/dto/EntityUpdateReqDTO.java.ftl");
-                    customFile.put("model/vo/"+prefix+"SimpleVo.java", "/templates/model/vo/EntitySimpleVo.java.ftl");
-                    customFile.put("model/vo/"+prefix+"Vo.java", "/templates/model/vo/EntityVo.java.ftl");
+                    customFile.put("model/entity/"+ tableName +".java", "/templates/model/entity/Entity.java.ftl");
+                    customFile.put("model/dto/"+ tableName +"AddReqDTO.java", "/templates/model/dto/EntityAddReqDTO.java.ftl");
+                    customFile.put("model/dto/"+ tableName +"BaseDTO.java", "/templates/model/dto/EntityBaseDTO.java.ftl");
+                    customFile.put("model/dto/"+ tableName +"PageReqDTO.java", "/templates/model/dto/EntityPageReqDTO.java.ftl");
+                    customFile.put("model/dto/"+ tableName +"UpdateReqDTO.java", "/templates/model/dto/EntityUpdateReqDTO.java.ftl");
+                    customFile.put("model/vo/"+ tableName +"SimpleVo.java", "/templates/model/vo/EntitySimpleVo.java.ftl");
+                    customFile.put("model/vo/"+ tableName +"Vo.java", "/templates/model/vo/EntityVo.java.ftl");
 
                     consumer.customFile(customFile);
 
@@ -68,17 +68,11 @@ public class Generator {
                     customMap.put("basePackage", basePackage);
                     customMap.put("description", description);
                     customMap.put("entityName", tableName);
-                    List<ColumnMetadata> metaInfo = getTableColumnsMetadata(tableName);
+                    List<ColumnMetadata> metaInfo = getTableColumnsMetadata(StrUtil.toUnderlineCase(tableName));
                     customMap.put("columns", metaInfo);
 
                     consumer.customMap(customMap);
 
-                    consumer.beforeOutputFile((tableInfo, objectMap) -> {
-
-                        System.out.println("tableInfo: " + tableInfo.toString());
-                        System.out.println("objectMap: " + objectMap.toString());
-
-                    });
 
                 })
                 .templateEngine(new FreemarkerTemplateEngine()) // 使用自定义的模板引擎

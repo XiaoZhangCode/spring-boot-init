@@ -4,19 +4,19 @@ import cn.dev33.satoken.annotation.SaCheckRole;
 import ${basePackage}.common.pojo.CommonResult;
 import ${basePackage}.common.pojo.PageResult;
 import ${basePackage}.constant.UserConstant;
-import ${basePackage}.model.dto.user.UserAddReqDTO;
-import ${basePackage}.model.dto.user.UserPageReqDTO;
-import ${basePackage}.model.dto.user.UserUpdateReqDTO;
-import ${basePackage}.model.entity.User;
-import ${basePackage}.model.vo.user.UserSimpleVo;
-import ${basePackage}.model.vo.user.UserVo;
-import ${basePackage}.service.UserService;
+import ${basePackage}.model.dto.${entityName?lower_case}.${entityName}AddReqDTO;
+import ${basePackage}.model.dto.${entityName?lower_case}.${entityName}PageReqDTO;
+import ${basePackage}.model.dto.${entityName?lower_case}.${entityName}UpdateReqDTO;
+import ${basePackage}.model.entity.${entityName};
+import ${basePackage}.model.vo.${entityName?lower_case}.${entityName}SimpleVo;
+import ${basePackage}.model.vo.${entityName?lower_case}.${entityName}Vo;
+import ${basePackage}.service.${entityName}Service;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import static ${basePackage}.common.exception.enums.GlobalErrorCodeConstants.BAD_REQUEST_PARAMS;
@@ -28,11 +28,11 @@ import static ${basePackage}.common.exception.enums.GlobalErrorCodeConstants.BAD
  */
 @Tag(name = "管理后台 - ${description}管理")
 @RestController
-@AllArgsConstructor
 @RequestMapping("/${entityName?lower_case}")
 public class ${entityName}Controller {
 
-    private final ${entityName}Service ${entityName?lower_case}Service;
+    @Resource
+    private ${entityName}Service ${entityName?lower_case}Service;
 
     /**
      * 创建${entityName}

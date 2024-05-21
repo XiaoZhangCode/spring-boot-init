@@ -1,6 +1,7 @@
 package cn.xzhang.boot.common.exception;
 
 import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.exception.NotRoleException;
 import cn.xzhang.boot.common.pojo.CommonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
@@ -22,6 +23,13 @@ import static cn.xzhang.boot.common.exception.enums.GlobalErrorCodeConstants.*;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(NotRoleException.class)
+    public CommonResult<?> handlerNotRoleException(NotRoleException nre) {
+        // 打印堆栈，以供调试
+        nre.printStackTrace();
+        // 获得角色标识
+        return CommonResult.error(FORBIDDEN);
+    }
 
     // 全局异常拦截（拦截项目中的NotLoginException异常）
     @ExceptionHandler(NotLoginException.class)

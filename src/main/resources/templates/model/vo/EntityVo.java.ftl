@@ -17,16 +17,23 @@ import java.io.Serializable;
 public class ${entityName}Vo implements Serializable {
 
 <#list columns as column>
-<#if column.columnName == 'id'>
+    <#if (
+    column.columnName == "createTime" || column.columnName == "updateTime"|| column.columnName == "deleted" ||
+    column.columnName == "creator" || column.columnName == "updater"
+    )>
+    <#else>
+    <#if column.columnName == 'id'>
     @Schema(description = "id")
     private Long id;
-<#else>
+
+    <#else>
     <#if (column.javaType == "java.util.Date")>
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     </#if>
     @Schema(description = "${column.columnComment}"<#if column.nullable>,requiredMode = Schema.RequiredMode.REQUIRED</#if>)
     private ${column.javaType} ${column.columnName};
 
+    </#if>
     </#if>
 </#list>
 }

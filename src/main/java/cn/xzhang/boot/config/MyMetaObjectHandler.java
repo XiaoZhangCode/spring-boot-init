@@ -36,12 +36,12 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
             }
 
             // 当前登录用户不为空，创建人为空，则当前登录用户为创建人
-            Long userId = (Long) StpUtil.getLoginId();
-            if (Objects.nonNull(userId) && Objects.isNull(baseDO.getCreator())) {
+            Long userId = StpUtil.getLoginIdAsLong();
+            if (Objects.isNull(baseDO.getCreator())) {
                 baseDO.setCreator(userId.toString());
             }
             // 当前登录用户不为空，更新人为空，则当前登录用户为更新人
-            if (Objects.nonNull(userId) && Objects.isNull(baseDO.getUpdater())) {
+            if (Objects.isNull(baseDO.getUpdater())) {
                 baseDO.setUpdater(userId.toString());
             }
         }
@@ -52,13 +52,13 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
         // 更新时间为空，则以当前时间为更新时间
         Object modifyTime = getFieldValByName("updateTime", metaObject);
         if (Objects.isNull(modifyTime)) {
-            setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
+            setFieldValByName("updateTime", DateUtil.date(), metaObject);
         }
 
         // 当前登录用户不为空，更新人为空，则当前登录用户为更新人
         Object modifier = getFieldValByName("updater", metaObject);
-        Long userId = (Long) StpUtil.getLoginId();
-        if (Objects.nonNull(userId) && Objects.isNull(modifier)) {
+        Long userId = StpUtil.getLoginIdAsLong();
+        if (Objects.isNull(modifier)) {
             setFieldValByName("updater", userId.toString(), metaObject);
         }
     }

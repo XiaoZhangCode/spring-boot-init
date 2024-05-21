@@ -22,9 +22,17 @@ import java.io.Serializable;
 public class ${entityName?cap_first}PageReqDTO extends PageParam implements Serializable {
 
 <#list columns as column>
+
+    <#if (
+    column.columnName == "createTime" || column.columnName == "updateTime"|| column.columnName == "deleted" ||
+    column.columnName == "creator" || column.columnName == "updater"
+    )>
+    <#else >
+
     <#if column.columnName == 'id'>
     @Schema(description = "id")
     private Long id;
+
     <#else>
     <#if (!column.nullable) && (column.javaType == 'String')>
     @NotEmpty(message = "${column.columnComment}不能为空")
@@ -36,7 +44,7 @@ public class ${entityName?cap_first}PageReqDTO extends PageParam implements Seri
     </#if>
     @Schema(description = "${column.columnComment}"<#if column.nullable>,requiredMode = Schema.RequiredMode.REQUIRED</#if>)
     private ${column.javaType} ${column.columnName};
-
+    </#if>
     </#if>
 </#list>
 

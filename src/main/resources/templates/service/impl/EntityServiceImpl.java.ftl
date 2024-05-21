@@ -3,17 +3,15 @@ package ${basePackage}.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import ${basePackage}.common.exception.ServiceException;
 import ${basePackage}.common.pojo.PageResult;
-import ${basePackage}.mapper.UserMapper;
-import ${basePackage}.model.dto.user.UserAddReqDTO;
-import ${basePackage}.model.dto.user.UserPageReqDTO;
-import ${basePackage}.model.dto.user.UserUpdateReqDTO;
-import ${basePackage}.model.entity.User;
-import ${basePackage}.model.vo.user.UserSimpleVo;
-import ${basePackage}.model.vo.user.UserVo;
-import ${basePackage}.service.UserService;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import ${basePackage}.mapper.${entityName}Mapper;
+import ${basePackage}.model.dto.${entityName?lower_case}.${entityName}AddReqDTO;
+import ${basePackage}.model.dto.${entityName?lower_case}.${entityName}PageReqDTO;
+import ${basePackage}.model.dto.${entityName?lower_case}.${entityName}UpdateReqDTO;
+import ${basePackage}.model.entity.${entityName};
+import ${basePackage}.model.vo.${entityName?lower_case}.${entityName}SimpleVo;
+import ${basePackage}.model.vo.${entityName?lower_case}.${entityName}Vo;
+import ${basePackage}.service.${entityName}Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,10 +41,6 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
      */
     @Override
     public long add${entityName}(${entityName}AddReqDTO ${entityName?lower_case}ReqDTO) {
-        // 校验输入参数
-        if (StringUtils.isAnyBlank(${entityName?lower_case}ReqDTO.get${entityName}Account(), ${entityName?lower_case}ReqDTO.get${entityName}Password(), ${entityName?lower_case}ReqDTO.get${entityName}Name())) {
-            throw exception(BAD_REQUEST);
-        }
         ${entityName} ${entityName?lower_case} = new ${entityName}();
         BeanUtil.copyProperties(${entityName?lower_case}ReqDTO, ${entityName?lower_case});
         if (!this.save(${entityName?lower_case})) {
@@ -63,21 +57,11 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
      */
     @Override
     public boolean update${entityName}(${entityName}UpdateReqDTO ${entityName?lower_case}ReqDTO) {
-        // 校验输入参数
-        if (StringUtils.isAnyBlank(${entityName?lower_case}ReqDTO.get${entityName}Account(), ${entityName?lower_case}ReqDTO.get${entityName}Password(), ${entityName?lower_case}ReqDTO.get${entityName}Name())) {
-            throw exception(BAD_REQUEST);
-        }
         if (${entityName?lower_case}ReqDTO.getId() == null) {
             throw exception(BAD_REQUEST);
         }
         ${entityName} ${entityName?lower_case} = new ${entityName}();
         BeanUtil.copyProperties(${entityName?lower_case}ReqDTO, ${entityName?lower_case});
-        // 判断${description}账号是否已存在
-        if (this.baseMapper.selectCount(new LambdaQueryWrapper<${entityName}>()
-                .eq(${entityName}::get${entityName}Account, ${entityName?lower_case}.get${entityName}Account())
-                .ne(${entityName}::getId, ${entityName?lower_case}.getId())) > 0) {
-            throw exception(USER_NAME_REPEAT);
-        }
         boolean b = this.updateById(${entityName?lower_case});
         if (!b) {
             throw exception(UPDATE_FAIL);
@@ -140,6 +124,15 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
         return new PageResult<>(${entityName?lower_case}Vos, pageResult.getTotal());
     }
 
+    @Override
+    public ${entityName}Vo get${entityName}VO(${entityName} ${entityName?lower_case}) {
+        if (${entityName?lower_case} == null) {
+            return null;
+        }
+        ${entityName}Vo ${entityName?lower_case}Vo = new ${entityName}Vo();
+        BeanUtil.copyProperties(${entityName?lower_case}, ${entityName?lower_case}Vo);
+        return ${entityName?lower_case}Vo;
+    }
 
 }
 

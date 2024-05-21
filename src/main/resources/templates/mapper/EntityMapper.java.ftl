@@ -18,9 +18,15 @@ public interface ${entityName}Mapper extends BaseMapperPlus<${entityName}> {
     default PageResult<${entityName}> selectPage(${entityName}PageReqDTO ${entityName?lower_case}PageReqDTO) {
         return selectPage(${entityName?lower_case}PageReqDTO, new LambdaQueryWrapper<${entityName}>()
                 <#list columns as column>
+                <#if (
+                    column.columnName == "createTime" || column.columnName == "updateTime"|| column.columnName == "deleted" ||
+                    column.columnName == "creator" || column.columnName == "updater"
+                )>
+                <#else >
                 <#if (column.javaType == 'String')>
                 .eq(Objects.nonNull(${entityName?lower_case}PageReqDTO.get${column.columnName?cap_first}()), ${entityName}::get${column.columnName?cap_first}, ${entityName?lower_case}PageReqDTO.get${column.columnName?cap_first}())
                 <#elseif (column.javaType == "java.util.Date") ||(column.columnName == "deleted")>
+                </#if>
                 </#if>
                 </#list>
                 .orderByDesc(${entityName}::getCreateTime)

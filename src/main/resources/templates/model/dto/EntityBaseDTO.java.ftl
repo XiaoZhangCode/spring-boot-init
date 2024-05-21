@@ -21,6 +21,11 @@ public class ${entityName}BaseDTO implements Serializable {
 <#list columns as column>
 <#if column.columnName == 'id'>
 <#else>
+    <#if (
+        column.columnName == "createTime" || column.columnName == "updateTime"|| column.columnName == "deleted" ||
+        column.columnName == "creator" || column.columnName == "updater"
+    )>
+    <#else >
     <#if (!column.nullable) && (column.javaType == 'String')>
     @NotEmpty(message = "${column.columnComment}不能为空")
     <#elseif (column.nullable)>
@@ -32,6 +37,7 @@ public class ${entityName}BaseDTO implements Serializable {
     @Schema(description = "${column.columnComment}"<#if column.nullable>,requiredMode = Schema.RequiredMode.REQUIRED</#if>)
     private ${column.javaType} ${column.columnName};
 
+    </#if>
 </#if>
 </#list>
 
