@@ -2,6 +2,7 @@ package cn.xzhang.boot.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.xzhang.boot.common.pojo.CommonResult;
 import cn.xzhang.boot.common.pojo.PageResult;
 import cn.xzhang.boot.constant.UserConstant;
@@ -196,6 +197,16 @@ public class UserController {
         boolean result = userService.updateUserProfile(userProfileUpdateReqDTO);
         // 返回更新用户信息成功响应结果
         return CommonResult.success(result);
+    }
+
+    @DeleteMapping("/logout")
+    @Operation(summary = "注销")
+    @SaCheckLogin
+    public CommonResult<Boolean> logout() {
+        // 调用服务层方法，注销用户，并获取注销结果
+        StpUtil.logout();
+        // 返回注销用户成功响应结果
+        return CommonResult.success(true);
     }
 
 
