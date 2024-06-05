@@ -45,13 +45,18 @@ public class FileController {
     private UserService userService;
 
 
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @SaCheckLogin
     @Operation(summary = "文件上传")
-    @Parameter(name = "file", description = "文件", required = true)
-    public CommonResult<String> uploadFile(@RequestPart("file") MultipartFile multipartFile,
-                                           UploadFileRequest uploadFileRequest) {
-        String biz = uploadFileRequest.getBiz();
+    public CommonResult<String> uploadFile(
+            @RequestPart(value = "file")
+            @RequestParam("file")
+            @Parameter(description = "上传的文件", required = true,
+                    content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE, schema = @Schema(implementation = MultipartFile.class)))
+            MultipartFile multipartFile,
+            @RequestParam("biz")
+            @Parameter(required = true, description = "业务枚举")
+            String biz) {
         FileUploadBizEnum fileUploadBizEnum = FileUploadBizEnum.getEnumByValue(biz);
         if (fileUploadBizEnum == null) {
             throw exception(BAD_REQUEST);
@@ -83,6 +88,7 @@ public class FileController {
             }
         }
     }
+
 
 
     private void validFile(MultipartFile multipartFile, FileUploadBizEnum fileUploadBizEnum) {
