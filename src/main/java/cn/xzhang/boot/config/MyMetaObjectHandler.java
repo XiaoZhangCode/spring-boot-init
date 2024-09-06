@@ -43,11 +43,11 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
                 userId = 1L;
             }
             if (Objects.isNull(baseDO.getCreator())) {
-                baseDO.setCreator(userId.toString());
+                baseDO.setCreator(Long.toString(userId));
             }
             // 当前登录用户不为空，更新人为空，则当前登录用户为更新人
             if (Objects.isNull(baseDO.getUpdater())) {
-                baseDO.setUpdater(userId.toString());
+                baseDO.setUpdater(Long.toString(userId));
             }
         }
     }
