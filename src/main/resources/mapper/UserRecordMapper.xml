@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xzhang.boot.mapper.UserRecordMapper">
+    <update id="updateTotalPrice">
+        update total_r
+        set totalPrice = ${totalPrice}
+        where id = 1
+    </update>
+
+
+    <select id="getTotalPrice" resultType="java.math.BigDecimal">
+        select totalPrice
+        from total_r
+        where id = 1
+    </select>
+
+
+</mapper>
