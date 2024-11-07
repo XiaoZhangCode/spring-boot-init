@@ -47,6 +47,7 @@ public interface GlobalErrorCodeConstants {
     ErrorCode ADD_FAIL = new ErrorCode(4222, "添加失败");
     ErrorCode UPDATE_FAIL = new ErrorCode(4223, "更新失败");
     ErrorCode DELETE_FAIL = new ErrorCode(4224, "删除失败");
+    ErrorCode OPERATION_TOO_FREQUENT =  new ErrorCode(4291, "操作过于频繁");
 
     //
 

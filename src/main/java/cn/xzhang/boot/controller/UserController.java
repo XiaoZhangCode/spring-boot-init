@@ -7,6 +7,7 @@ import cn.xzhang.boot.common.pojo.CommonResult;
 import cn.xzhang.boot.common.pojo.PageResult;
 import cn.xzhang.boot.constant.UserConstant;
 import cn.xzhang.boot.model.dto.user.*;
+import cn.xzhang.boot.model.dto.userrecord.UserWithdrawReqDTO;
 import cn.xzhang.boot.model.entity.User;
 import cn.xzhang.boot.model.vo.user.LoginUserVO;
 import cn.xzhang.boot.model.vo.user.UserSimpleVo;
@@ -209,6 +210,21 @@ public class UserController {
         return CommonResult.success(true);
     }
 
+
+    // 用户提现
+    @PostMapping("/withdraw")
+    @Operation(summary = "用户提现")
+    @SaCheckLogin
+    public CommonResult<Boolean> userWithdraw(@RequestBody UserWithdrawReqDTO userWithdrawReqDTO) {
+        // 检查传入的用户请求数据是否为空
+        if (userWithdrawReqDTO == null) {
+            return CommonResult.error(BAD_REQUEST_PARAMS);
+        }
+        // 调用服务层方法，用户提现，并获取提现结果
+        boolean result = userService.userWithdraw(userWithdrawReqDTO);
+        // 返回用户提现成功响应结果
+        return CommonResult.success(result);
+    }
 
 
 

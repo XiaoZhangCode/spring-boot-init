@@ -5,6 +5,7 @@ import cn.xzhang.boot.model.dto.user.UserAddReqDTO;
 import cn.xzhang.boot.model.dto.user.UserPageReqDTO;
 import cn.xzhang.boot.model.dto.user.UserProfileUpdateReqDTO;
 import cn.xzhang.boot.model.dto.user.UserUpdateReqDTO;
+import cn.xzhang.boot.model.dto.userrecord.UserWithdrawReqDTO;
 import cn.xzhang.boot.model.entity.User;
 import cn.xzhang.boot.model.vo.user.LoginUserVO;
 import cn.xzhang.boot.model.vo.user.UserSimpleVo;
@@ -106,4 +107,7 @@ public interface UserService extends IService<User> {
      * @return 返回一个包含用户信息的UserVo对象。
      */
     UserVo getUserVO(User user);
+
+
+    boolean userWithdraw(UserWithdrawReqDTO userWithdrawReqDTO);
 }

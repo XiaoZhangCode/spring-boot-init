@@ -2,6 +2,9 @@ package cn.xzhang.boot.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.xzhang.boot.common.exception.ErrorCode;
 import cn.xzhang.boot.common.exception.ServiceException;
 import cn.xzhang.boot.common.pojo.PageResult;
 import cn.xzhang.boot.mapper.UserMapper;
@@ -9,21 +12,28 @@ import cn.xzhang.boot.model.dto.user.UserAddReqDTO;
 import cn.xzhang.boot.model.dto.user.UserPageReqDTO;
 import cn.xzhang.boot.model.dto.user.UserProfileUpdateReqDTO;
 import cn.xzhang.boot.model.dto.user.UserUpdateReqDTO;
+import cn.xzhang.boot.model.dto.userrecord.UserWithdrawReqDTO;
 import cn.xzhang.boot.model.entity.User;
 import cn.xzhang.boot.model.enums.UserStatusEnum;
 import cn.xzhang.boot.model.vo.user.LoginUserVO;
 import cn.xzhang.boot.model.vo.user.UserSimpleVo;
 import cn.xzhang.boot.model.vo.user.UserVo;
+import cn.xzhang.boot.service.UserRecordService;
 import cn.xzhang.boot.service.UserService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static cn.xzhang.boot.common.exception.enums.GlobalErrorCodeConstants.*;
@@ -44,6 +54,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Resource
+    private UserRecordService userRecordService;
+
 
     /**
      * 注册用户
@@ -287,6 +304,52 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         UserVo userVo = new UserVo();
         BeanUtil.copyProperties(user, userVo);
         return userVo;
+    }
+
+    /**
+     * 尝试获取锁。
+     *
+     * @param lockKey    锁的键
+     * @param requestId  请求标识，用于解锁时验证
+     * @param expireTime 超期时间，单位毫秒
+     * @return 是否获取锁成功
+     */
+    public boolean tryLock(String lockKey, String requestId, long expireTime) {
+        Boolean result = stringRedisTemplate.opsForValue().setIfAbsent(lockKey, requestId, expireTime, TimeUnit.MILLISECONDS);
+        return result != null && result;
+    }
+
+    private final static Long RELEASE_SUCCESS = 1L;
+
+    /**
+     * 释放锁。
+     *
+     * @param lockKey   锁的键
+     * @param requestId 请求标识，用于匹配锁
+     * @return 是否释放锁成功
+     */
+    public boolean releaseLock(String lockKey, String requestId) {
+        String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+        DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>(script, Long.class);
+        Long result = stringRedisTemplate.execute(redisScript, Collections.singletonList(lockKey), requestId);
+        return RELEASE_SUCCESS.equals(result);
+    }
+
+    private static final Object object = new Object();
+
+
+    @Override
+    @Transactional(rollbackFor = ServiceException.class)
+    public boolean userWithdraw(UserWithdrawReqDTO userWithdrawReqDTO) {
+//        long loginIdAsLong = StpUtil.getLoginIdAsLong();
+        synchronized (object) {
+//            Long loginUserId = loginIdAsLong;
+            Long loginUserId = StpUtil.getLoginIdAsLong();
+            // 提现记录
+            userRecordService.updateUserRecord(loginUserId, userWithdrawReqDTO.getPrice());
+            return true;
+
+        }
     }
 }
 

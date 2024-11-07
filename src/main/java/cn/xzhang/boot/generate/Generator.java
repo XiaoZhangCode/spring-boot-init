@@ -18,9 +18,9 @@ public class Generator {
         // 生成文件的包名
         String basePackage = "cn.xzhang.boot";
         // 文件头描述
-        String description = "用户";
+        String description = "提现记录";
         // 实体类的表名 大写
-        String tableName = "User";
+        String tableName = "UserRecord";
         // 生成的文件目录
         String path = "src/main/java/generated";
 
