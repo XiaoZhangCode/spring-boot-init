@@ -1,4 +1,7 @@
 package ${basePackage}.model.entity;
+<#-- 转换为大驼峰 -->
+<#assign words = entityName?split("_")>
+<#assign pascalCaseEntityName = words?map(w -> w?capitalize)?join("")>
 
 import ${basePackage}.common.pojo.BaseDO;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -15,13 +18,13 @@ import java.io.Serializable;
 
 /**
 * ${description}
-* @TableName ${entityName}
+* @TableName ${entityName?lower_case}
 * @author <a href="https://github.com/XiaoZhangCode">XiaoZhangCode</a>
 */
 @TableName(value ="${entityName?lower_case}")
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ${entityName} extends BaseDO implements Serializable {
+public class ${pascalCaseEntityName} extends BaseDO implements Serializable {
 
 
 <#list columns as column>

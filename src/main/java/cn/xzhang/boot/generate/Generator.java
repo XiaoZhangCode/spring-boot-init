@@ -20,9 +20,15 @@ public class Generator {
         // 文件头描述
         String description = "用户";
         // 实体类的表名 大写
-        String tableName = "User";
+        String tableName = "user";
         // 生成的文件目录
         String path = "src/main/java/generated";
+
+        // 将tableName 转换成大驼峰命名
+        String entityName = StrUtil.upperFirst(StrUtil.toCamelCase(tableName));
+        // 将tableName 转换成小驼峰命名
+        String entityNameLower = StrUtil.lowerFirst(entityName);
+
 
         FastAutoGenerator.create(url, username, password)
                 .globalConfig(builder -> {
@@ -31,19 +37,20 @@ public class Generator {
                             .outputDir(path); // 指定输出目录
                 })
                 .packageConfig(builder -> {
-                    builder.parent(tableName.toLowerCase()); // 设置父包名
-
+                    builder.parent(basePackage); // 设置父包名
                 })
                 .strategyConfig(builder -> {
                     builder.addInclude(StrUtil.toUnderlineCase(tableName));
                     builder.entityBuilder()
-                            .javaTemplate("/templates/model/entity/Entity.java")
+                            // 取消生成Entity
+                            .entityBuilder()
+                            .disable()
                             .controllerBuilder()
                             .template("/templates/controller/Controller.java")
                             .serviceBuilder()
                             .serviceTemplate("/templates/service/EntityService.java")
                             .serviceImplTemplate("/templates/service/impl/EntityServiceImpl.java")
-                            .formatServiceFileName(tableName + "Service")
+                            .formatServiceFileName(entityName + "Service")
                             .mapperBuilder()
                             .mapperTemplate("/templates/mapper/EntityMapper.java")
                             .mapperXmlTemplate("/templates/mapper/EntityMapper.xml")
@@ -52,18 +59,16 @@ public class Generator {
                 })
                 .injectionConfig(consumer -> {
                     Map<String, String> customFile = new HashMap<>();
-//                    // entity/dto/vo
-                    customFile.put("model/entity/"+ tableName +".java", "/templates/model/entity/Entity.java.ftl");
-                    customFile.put("model/dto/"+ tableName +"AddReqDTO.java", "/templates/model/dto/EntityAddReqDTO.java.ftl");
-                    customFile.put("model/dto/"+ tableName +"BaseDTO.java", "/templates/model/dto/EntityBaseDTO.java.ftl");
-                    customFile.put("model/dto/"+ tableName +"PageReqDTO.java", "/templates/model/dto/EntityPageReqDTO.java.ftl");
-                    customFile.put("model/dto/"+ tableName +"UpdateReqDTO.java", "/templates/model/dto/EntityUpdateReqDTO.java.ftl");
-                    customFile.put("model/vo/"+ tableName +"SimpleVo.java", "/templates/model/vo/EntitySimpleVo.java.ftl");
-                    customFile.put("model/vo/"+ tableName +"Vo.java", "/templates/model/vo/EntityVo.java.ftl");
+                    // entity/dto/vo
+                    customFile.put("/model/entity/" + entityName + ".java", "/templates/model/entity/Entity.java.ftl");
+                    customFile.put("/model/dto/" + entityNameLower + "/" + entityName + "SaveReqDTO.java", "/templates/model/dto/EntitySaveReqDTO.java.ftl");
+                    customFile.put("/model/dto/" + entityNameLower + "/" + entityName + "PageReqDTO.java", "/templates/model/dto/EntityPageReqDTO.java.ftl");
+                    customFile.put("/model/vo/" + entityNameLower + "/" + entityName + "SimpleVo.java", "/templates/model/vo/EntitySimpleVo.java.ftl");
+                    customFile.put("/model/vo/" + entityNameLower + "/" + entityName + "Vo.java", "/templates/model/vo/EntityVo.java.ftl");
 
                     consumer.customFile(customFile);
 
-
+                    // 自定义数据
                     Map<String, Object> customMap = new HashMap<>();
                     customMap.put("basePackage", basePackage);
                     customMap.put("description", description);
@@ -135,7 +140,6 @@ public class Generator {
         }
 
 
-
         public void inferJavaType() {
             if (columnType != null) {
                 columnType = columnType.toUpperCase();
@@ -145,14 +149,12 @@ public class Generator {
                     case "TEXT":
                         javaType = "String";
                         break;
-                    case "TINYINT":
-                        javaType = "Byte";
-                        break;
                     case "SMALLINT":
                         javaType = "Short";
                         break;
                     case "INTEGER":
                     case "INT":
+                    case "TINYINT":
                         javaType = "Integer";
                         break;
                     case "BIGINT":

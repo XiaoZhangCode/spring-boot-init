@@ -5,7 +5,6 @@ import cn.hutool.core.io.FileUtil;
 import cn.xzhang.boot.common.pojo.CommonResult;
 import cn.xzhang.boot.constant.FileConstant;
 import cn.xzhang.boot.manager.CosManager;
-import cn.xzhang.boot.model.dto.file.UploadFileRequest;
 import cn.xzhang.boot.model.entity.User;
 import cn.xzhang.boot.model.enums.FileUploadBizEnum;
 import cn.xzhang.boot.service.UserService;

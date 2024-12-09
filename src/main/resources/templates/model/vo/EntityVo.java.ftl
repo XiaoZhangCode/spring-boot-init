@@ -1,4 +1,7 @@
-package ${basePackage}.model.dto.${entityName?lower_case};
+<#-- 转换为大驼峰 -->
+<#assign words = entityName?split("_")>
+<#assign pascalCaseEntityName = words?map(w -> w?capitalize)?join("")>
+package ${basePackage}.model.vo.${pascalCaseEntityName};
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -14,7 +17,7 @@ import java.io.Serializable;
  */
 @Data
 @Schema(description = "${description}VO")
-public class ${entityName}Vo implements Serializable {
+public class ${pascalCaseEntityName}Vo implements Serializable {
 
 <#list columns as column>
     <#if (

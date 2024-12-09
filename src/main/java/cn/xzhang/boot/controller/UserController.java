@@ -100,36 +100,35 @@ public class UserController {
     }
 
     /**
-     * 创建用户
+     * 创建user
      *
-     * @param userReqDTO 用户添加请求数据传输对象，包含新增用户的信息
-     * @return 返回操作结果，其中包含新添加用户的ID
+     * @param userReqDTO user添加请求数据传输对象，包含新增User的信息
+     * @return 返回操作结果，其中包含新添加user的ID
      */
     @PostMapping("/add")
     @Operation(summary = "创建用户")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
-    public CommonResult<Long> addUser(@RequestBody UserAddReqDTO userReqDTO) {
-        // 检查传入的用户请求数据是否为空
+    public CommonResult<Long> addUser(@RequestBody UserSaveReqDTO userReqDTO) {
         if (userReqDTO == null) {
             return CommonResult.error(BAD_REQUEST_PARAMS);
         }
-        // 调用服务层方法，添加用户，并获取添加结果（用户ID）
+        // 调用服务层方法，添加，并获取添加结果
         long result = userService.addUser(userReqDTO);
-        // 返回添加用户成功响应结果，包含用户ID
+        // 返回添加成功响应结果
         return CommonResult.success(result);
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新用户信息")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
-    public CommonResult<Boolean> updateUser(@RequestBody @Valid UserUpdateReqDTO userReqDTO) {
-        // 检查传入的用户请求数据是否为空
+    public CommonResult<Boolean> updateUser(@RequestBody @Valid UserSaveReqDTO userReqDTO) {
+        // 检查传入的请求数据是否为空
         if (userReqDTO == null) {
             return CommonResult.error(BAD_REQUEST_PARAMS);
         }
-        // 调用服务层方法，更新用户信息，并获取更新结果
+        // 调用服务层方法，更新信息，并获取更新结果
         boolean result = userService.updateUser(userReqDTO);
-        // 返回更新用户信息成功响应结果
+        // 返回更新信息成功响应结果
         return CommonResult.success(result);
     }
 

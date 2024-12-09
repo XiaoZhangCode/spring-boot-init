@@ -5,10 +5,9 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.xzhang.boot.common.exception.ServiceException;
 import cn.xzhang.boot.common.pojo.PageResult;
 import cn.xzhang.boot.mapper.UserMapper;
-import cn.xzhang.boot.model.dto.user.UserAddReqDTO;
 import cn.xzhang.boot.model.dto.user.UserPageReqDTO;
 import cn.xzhang.boot.model.dto.user.UserProfileUpdateReqDTO;
-import cn.xzhang.boot.model.dto.user.UserUpdateReqDTO;
+import cn.xzhang.boot.model.dto.user.UserSaveReqDTO;
 import cn.xzhang.boot.model.entity.User;
 import cn.xzhang.boot.model.enums.UserStatusEnum;
 import cn.xzhang.boot.model.vo.user.LoginUserVO;
@@ -152,6 +151,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return loginUserVO;
     }
 
+
     /**
      * 添加新用户
      *
@@ -159,7 +159,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * @return 添加成功返回用户id
      */
     @Override
-    public long addUser(UserAddReqDTO userReqDTO) {
+    public long addUser(UserSaveReqDTO userReqDTO) {
         // 校验输入参数
         if (StringUtils.isAnyBlank(userReqDTO.getUserAccount(), userReqDTO.getUserPassword(), userReqDTO.getUserName())) {
             throw exception(BAD_REQUEST);
@@ -179,7 +179,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * @return 更新成功返回true
      */
     @Override
-    public boolean updateUser(UserUpdateReqDTO userReqDTO) {
+    public boolean updateUser(UserSaveReqDTO userReqDTO) {
         // 校验输入参数
         if (StringUtils.isAnyBlank(userReqDTO.getUserAccount(), userReqDTO.getUserPassword(), userReqDTO.getUserName())) {
             throw exception(BAD_REQUEST);

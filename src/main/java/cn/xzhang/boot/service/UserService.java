@@ -1,10 +1,9 @@
 package cn.xzhang.boot.service;
 
 import cn.xzhang.boot.common.pojo.PageResult;
-import cn.xzhang.boot.model.dto.user.UserAddReqDTO;
 import cn.xzhang.boot.model.dto.user.UserPageReqDTO;
 import cn.xzhang.boot.model.dto.user.UserProfileUpdateReqDTO;
-import cn.xzhang.boot.model.dto.user.UserUpdateReqDTO;
+import cn.xzhang.boot.model.dto.user.UserSaveReqDTO;
 import cn.xzhang.boot.model.entity.User;
 import cn.xzhang.boot.model.vo.user.LoginUserVO;
 import cn.xzhang.boot.model.vo.user.UserSimpleVo;
@@ -57,7 +56,7 @@ public interface UserService extends IService<User> {
      * @param userReqDTO 用户添加请求数据传输对象，包含要添加的用户的所有必要信息。
      * @return 返回添加操作的自增ID，用于标识此次添加操作。
      */
-    long addUser(UserAddReqDTO userReqDTO);
+    long addUser(UserSaveReqDTO userReqDTO);
 
     /**
      * 更新用户信息。
@@ -65,7 +64,7 @@ public interface UserService extends IService<User> {
      * @param userReqDTO 包含用户更新信息的请求DTO（数据传输对象）。该对象应包含需要更新的用户属性。
      * @return boolean 返回true如果用户信息更新成功，返回false如果更新失败或遇到错误。
      */
-    boolean updateUser(UserUpdateReqDTO userReqDTO);
+    boolean updateUser(UserSaveReqDTO userReqDTO);
 
     /**
      * 删除用户
