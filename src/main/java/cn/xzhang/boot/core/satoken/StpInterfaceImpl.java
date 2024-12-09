@@ -2,6 +2,7 @@ package cn.xzhang.boot.core.satoken;
 
 import cn.dev33.satoken.stp.StpInterface;
 import cn.xzhang.boot.model.entity.User;
+import cn.xzhang.boot.service.UserService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
