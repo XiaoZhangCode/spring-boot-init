@@ -1,9 +1,8 @@
 package cn.xzhang.boot.service;
 
+import cn.xzhang.boot.common.pojo.CommonResult;
 import cn.xzhang.boot.common.pojo.PageResult;
-import cn.xzhang.boot.model.dto.user.UserPageReqDTO;
-import cn.xzhang.boot.model.dto.user.UserProfileUpdateReqDTO;
-import cn.xzhang.boot.model.dto.user.UserSaveReqDTO;
+import cn.xzhang.boot.model.dto.user.*;
 import cn.xzhang.boot.model.entity.User;
 import cn.xzhang.boot.model.vo.user.LoginUserVO;
 import cn.xzhang.boot.model.vo.user.UserSimpleVo;
@@ -105,4 +104,20 @@ public interface UserService extends IService<User> {
      * @return 返回一个包含用户信息的UserVo对象。
      */
     UserVo getUserVO(User user);
+
+    /**
+     * 重置用户密码
+     *
+     * @param userPasswordResetReqDTO 包含重置密码信息的用户密码重置请求数据传输对象
+     * @return 若重置密码成功返回true，否则返回false
+     */
+    boolean resetUserPassword(UserPasswordResetReqDTO userPasswordResetReqDTO);
+
+    /**
+     * 用户修改密码
+     *
+     * @param userPasswordUpdateReqDTO 包含修改密码请求数据传输对象
+     * @return 若修改密码成功返回true，否则返回false
+     */
+    Boolean updatePassword(UserPasswordUpdateReqDTO userPasswordUpdateReqDTO);
 }

@@ -181,9 +181,6 @@ public class UserController {
         return CommonResult.success(userService.getUserPage(userPageReqDTO));
     }
 
-
-
-    // 修改个人信息
     @PutMapping("/update/profile")
     @Operation(summary = "修改个人信息")
     @SaCheckLogin
@@ -208,6 +205,30 @@ public class UserController {
         return CommonResult.success(true);
     }
 
+    @PostMapping("/reset-password")
+    @Operation(summary = "重置用户密码")
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
+    public CommonResult<Boolean> resetUserPassword(@RequestBody UserPasswordResetReqDTO userPasswordResetReqDTO) {
+        // 检查传入的用户请求数据是否为空
+        if (userPasswordResetReqDTO == null) {
+            return CommonResult.error(BAD_REQUEST_PARAMS);
+        }
+        // 调用服务层方法，重置用户密码，并获取重置结果
+        boolean result = userService.resetUserPassword(userPasswordResetReqDTO);
+        // 返回重置用户密码成功响应结果
+        return CommonResult.success(result);
+    }
+
+
+    @PostMapping("/update-password")
+    @Operation(summary = "修改密码")
+    @SaCheckLogin
+    public CommonResult<Boolean> updatePassword(@RequestBody UserPasswordUpdateReqDTO userPasswordUpdateReqDTO) {
+        if(userPasswordUpdateReqDTO == null){
+            return CommonResult.error(BAD_REQUEST_PARAMS);
+        }
+        return CommonResult.success(userService.updatePassword(userPasswordUpdateReqDTO));
+    }
 
 
 

@@ -3,11 +3,10 @@ package cn.xzhang.boot.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.xzhang.boot.common.exception.ServiceException;
+import cn.xzhang.boot.common.pojo.CommonResult;
 import cn.xzhang.boot.common.pojo.PageResult;
 import cn.xzhang.boot.mapper.UserMapper;
-import cn.xzhang.boot.model.dto.user.UserPageReqDTO;
-import cn.xzhang.boot.model.dto.user.UserProfileUpdateReqDTO;
-import cn.xzhang.boot.model.dto.user.UserSaveReqDTO;
+import cn.xzhang.boot.model.dto.user.*;
 import cn.xzhang.boot.model.entity.User;
 import cn.xzhang.boot.model.enums.UserStatusEnum;
 import cn.xzhang.boot.model.vo.user.LoginUserVO;
@@ -70,12 +69,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         synchronized (userAccount.intern()) {
             // 账号重复性检查
-            LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(User::getUserAccount, userAccount);
-            long count = this.baseMapper.selectCount(queryWrapper);
-            if (count > 0) {
-                throw exception(USER_NAME_REPEAT);
-            }
+            accountReportCheck(userAccount);
             // 对密码进行加密
             String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
             // 创建新用户并保存
@@ -87,6 +81,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 throw exception(USER_REGISTER_FAIL);
             }
             return user.getId();
+        }
+    }
+
+    /**
+     * 账号重复性检查
+     *
+     * @param userAccount 用户账号
+     */
+    private void accountReportCheck(String userAccount) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getUserAccount, userAccount);
+        long count = this.baseMapper.selectCount(queryWrapper);
+        if (count > 0) {
+            throw exception(USER_NAME_REPEAT);
         }
     }
 
@@ -111,9 +119,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         // 对密码进行加密并验证用户是否存在
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
-        User user = this.baseMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUserAccount, userAccount).eq(User::getUserPassword, encryptPassword));
+        User user = this.baseMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUserAccount, userAccount));
         if (user == null) {
             throw exception(USER_NOT_EXIST);
+        }
+        if (!user.getUserPassword().equals(encryptPassword)) {
+            throw exception(PASSWORD_NOT_MATCH);
         }
         if (!UserStatusEnum.isNormal(user.getUserStatus())) {
             throw exception(USER_NOT_NORMAL);
@@ -166,10 +177,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         User user = new User();
         BeanUtil.copyProperties(userReqDTO, user);
-        if (!this.save(user)) {
-            throw exception(ADD_FAIL);
+        String userAccount = userReqDTO.getUserAccount();
+        String userPassword = userReqDTO.getUserPassword();
+        synchronized (userAccount.intern()) {
+            // 账号重复性检查
+            accountReportCheck(userAccount);
+            // 对密码进行加密
+            String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
+            user.setUserPassword(encryptPassword);
+            boolean saveResult = this.save(user);
+            if (!saveResult) {
+                throw exception(USER_REGISTER_FAIL);
+            }
+            return user.getId();
         }
-        return user.getId();
     }
 
     /**
@@ -181,14 +202,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public boolean updateUser(UserSaveReqDTO userReqDTO) {
         // 校验输入参数
-        if (StringUtils.isAnyBlank(userReqDTO.getUserAccount(), userReqDTO.getUserPassword(), userReqDTO.getUserName())) {
+        if (StringUtils.isAnyBlank(userReqDTO.getUserAccount(), userReqDTO.getUserName())) {
             throw exception(BAD_REQUEST);
         }
         if (userReqDTO.getId() == null) {
             throw exception(BAD_REQUEST);
         }
         User user = new User();
-        BeanUtil.copyProperties(userReqDTO, user);
+        BeanUtil.copyProperties(userReqDTO, user, "userPassword");
         // 判断用户账号是否已存在
         if (this.baseMapper.selectCount(new LambdaQueryWrapper<User>()
                 .eq(User::getUserAccount, user.getUserAccount())
@@ -287,6 +308,47 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         UserVo userVo = new UserVo();
         BeanUtil.copyProperties(user, userVo);
         return userVo;
+    }
+
+    @Override
+    public boolean resetUserPassword(UserPasswordResetReqDTO userPasswordResetReqDTO) {
+        String userId = userPasswordResetReqDTO.getId();
+        String newPassword = userPasswordResetReqDTO.getNewPassword();
+        if (StringUtils.isAnyBlank(userId, newPassword)) {
+            throw exception(BAD_REQUEST_PARAMS_ERROR, "用户id或者密码为空");
+        }
+        User user = this.getById(userId);
+        if (user == null) {
+            throw exception(USER_NOT_EXIST);
+        }
+        String encryptPassword = DigestUtils.md5DigestAsHex((SALT + newPassword).getBytes());
+        user.setUserPassword(encryptPassword);
+        return this.updateById(user);
+    }
+
+    @Override
+    public Boolean updatePassword(UserPasswordUpdateReqDTO userPasswordUpdateReqDTO) {
+        String oldPassword = userPasswordUpdateReqDTO.getOldPassword();
+        String newPassword = userPasswordUpdateReqDTO.getNewPassword();
+        String checkPassword = userPasswordUpdateReqDTO.getCheckPassword();
+        if (StringUtils.isAnyBlank(oldPassword, newPassword, checkPassword)) {
+            throw exception(BAD_REQUEST_PARAMS_ERROR, "请求参数缺失，请检查参数！");
+        }
+        long loginUserId = StpUtil.getLoginIdAsLong();
+        User user = this.getById(loginUserId);
+        if (!DigestUtils.md5DigestAsHex((SALT + oldPassword).getBytes()).equals(user.getUserPassword())) {
+            throw exception(USER_PASSWORD_ERROR);
+        }
+        if (!newPassword.equals(checkPassword)) {
+            throw exception(PASSWORD_NOT_MATCH);
+        }
+        String encryptPassword = DigestUtils.md5DigestAsHex((SALT + newPassword).getBytes());
+        user.setUserPassword(encryptPassword);
+        boolean updated = this.updateById(user);
+        if (!updated) {
+            throw exception(UPDATE_FAIL);
+        }
+        return true;
     }
 }
 
