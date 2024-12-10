@@ -71,4 +71,7 @@ public enum UserStatusEnum {
         return NORMAL.getValue().equals(value);
     }
 
+    public static boolean isDisable(Integer value) {
+        return DISABLE.getValue().equals(value);
+    }
 }

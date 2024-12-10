@@ -8,12 +8,15 @@ import cn.xzhang.boot.common.pojo.PageResult;
 import cn.xzhang.boot.constant.UserConstant;
 import cn.xzhang.boot.model.dto.user.*;
 import cn.xzhang.boot.model.entity.User;
+import cn.xzhang.boot.model.enums.UserStatusEnum;
 import cn.xzhang.boot.model.vo.user.LoginUserVO;
 import cn.xzhang.boot.model.vo.user.UserSimpleVo;
 import cn.xzhang.boot.model.vo.user.UserVo;
 import cn.xzhang.boot.service.UserService;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -231,6 +234,31 @@ public class UserController {
         return CommonResult.success(userService.updatePassword(userPasswordUpdateReqDTO));
     }
 
+
+    @PutMapping("/update/status")
+    @Operation(summary = "冻结解冻用户")
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
+    @Parameters({
+            @Parameter(name = "id", description = "用户ID", required = true),
+            @Parameter(name = "status", description = "状态 0正常 1冻结", required = true)
+    })
+    public CommonResult<Boolean> updateUserStatus(@RequestParam("id") Long id, @RequestParam("status") Integer status) {
+        if (id == null || status == null) {
+            return CommonResult.error(BAD_REQUEST_PARAMS);
+        }
+        if (UserStatusEnum.isNormal(status)) {
+            // 解冻用户
+            userService.update(new LambdaUpdateWrapper<User>().eq(User::getId, id).set(User::getUserStatus, UserStatusEnum.NORMAL.getValue()));
+        } else if (UserStatusEnum.isDisable(status)) {
+            // 冻结用户
+            userService.update(new LambdaUpdateWrapper<User>().eq(User::getId, id).set(User::getUserStatus, UserStatusEnum.DISABLE.getValue()));
+            // 将此用户踢下线
+            StpUtil.kickout(id);
+        } else {
+            return CommonResult.error(BAD_REQUEST_PARAMS);
+        }
+        return CommonResult.success(true);
+    }
 
 
 
