@@ -163,6 +163,7 @@ public class UserController {
     @GetMapping("/get/vo")
     @Operation(summary = "获取用户")
     @Parameter(name = "id", description = "用户ID",required = true)
+    @SaCheckLogin
     public CommonResult<UserSimpleVo> getUserVO(@RequestParam("id") Long id) {
         // 检查传入的用户ID是否为空
         if (id == null) {
