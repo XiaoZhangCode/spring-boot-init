@@ -18,7 +18,7 @@ import java.net.UnknownHostException;
  * @author <a href="https://github.com/XiaoZhangCode">XiaoZhangCode</a>
  */
 // 禁用redis
-@SpringBootApplication(exclude = {RedisAutoConfiguration.class})
+@SpringBootApplication
 @Slf4j
 @EnableAdminServer
 @MapperScan("cn.xzhang.boot.mapper")

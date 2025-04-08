@@ -2,7 +2,7 @@ spring:
   application:
     name: springboot-init
   profiles:
-    active: local
+    active: prod
   servlet:
     multipart:
       max-file-size: 20MB
