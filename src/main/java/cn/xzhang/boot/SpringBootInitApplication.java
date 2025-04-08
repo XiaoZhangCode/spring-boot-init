@@ -7,6 +7,8 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.core.env.Environment;
 
 import java.net.InetAddress;
@@ -15,8 +17,8 @@ import java.net.UnknownHostException;
 /**
  * @author <a href="https://github.com/XiaoZhangCode">XiaoZhangCode</a>
  */
-// 禁用数据库
-@SpringBootApplication
+// 禁用redis
+@SpringBootApplication(exclude = {RedisAutoConfiguration.class})
 @Slf4j
 @EnableAdminServer
 @MapperScan("cn.xzhang.boot.mapper")
