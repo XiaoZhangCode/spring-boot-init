@@ -15,7 +15,8 @@ import java.net.UnknownHostException;
 /**
  * @author <a href="https://github.com/XiaoZhangCode">XiaoZhangCode</a>
  */
-@SpringBootApplication
+// 禁用数据库
+@SpringBootApplication(exclude = {org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration.class})
 @Slf4j
 @EnableAdminServer
 @MapperScan("cn.xzhang.boot.mapper")
